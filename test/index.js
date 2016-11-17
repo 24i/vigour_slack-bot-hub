@@ -12,6 +12,8 @@ test('send message to channel', t => {
   const start = sinon.stub(slack.RtmClient.prototype, 'start')
   const sendMessage = sinon.stub(slack.RtmClient.prototype, 'sendMessage')
 
+  slack.RtmClient.prototype.activeUserId = 'user-id'
+
   on
     .withArgs(slack.CLIENT_EVENTS.RTM.AUTHENTICATED)
     .callsArgWith(1, { channels: [ { id: 'channel-id', name: 'channel', is_member: true } ] })
@@ -33,7 +35,7 @@ test('send message to channel', t => {
 
   t.plan(1)
 
-  client.subscribe({ outgoing: { val: true } }, (val, type) => {
+  client.subscribe({ out: { val: true } }, (val, type) => {
     if (type === 'update') {
       t.ok(sendMessage.getCall(0).calledWith('message body', 'channel-id'), 'sends message to slack API')
       client.remove()
@@ -45,11 +47,45 @@ test('send message to channel', t => {
   })
 
   client.set({
-    outgoing: {
+    out: {
       first: {
         to: '#channel',
         text: 'message body'
       }
     }
+  })
+})
+
+test('receive message', t => {
+  const on = sinon.stub(slack.RtmClient.prototype, 'on')
+  const start = sinon.stub(slack.RtmClient.prototype, 'start')
+
+  slack.RtmClient.prototype.activeUserId = 'user-id'
+
+  on
+    .withArgs(slack.CLIENT_EVENTS.RTM.AUTHENTICATED)
+    .callsArgWith(1)
+
+  on
+    .withArgs(slack.RTM_EVENTS.MESSAGE)
+    .callsArgWith(1, { ts: 100, text: '<@user-id> message body', channel: 'channel-id' })
+
+  const server = bot('TOKEN', 9966)
+  const client = new Hub({
+    id: 'client',
+    url: 'ws://localhost:9966',
+    context: false
+  })
+
+  t.plan(1)
+
+  client.subscribe({ in: { val: true } }, val => {
+    t.deepEqual(val.serialize(), {
+      '100': { ts: 100, text: '<@user-id> message body', channel: 'channel-id' }
+    }, 'receives the message')
+    client.remove()
+    server.remove()
+    on.restore()
+    start.restore()
   })
 })
