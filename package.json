@@ -1,6 +1,6 @@
 {
   "name": "slack-bot-hub",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A slack bot runner as a hub",
   "main": "./lib/index.js",
   "bin": {
