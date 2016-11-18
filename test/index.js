@@ -26,7 +26,7 @@ test('send message to channel', t => {
     .withArgs('message body', 'channel-id')
     .returns(Promise.resolve())
 
-  const server = bot('TOKEN', 9966)
+  const server = bot(9966, 'TOKEN')
   const client = new Hub({
     id: 'client',
     url: 'ws://localhost:9966',
@@ -70,7 +70,7 @@ test('receive message', t => {
     .withArgs(slack.RTM_EVENTS.MESSAGE)
     .callsArgWith(1, { ts: 100, text: '<@user-id> message body', channel: 'channel-id' })
 
-  const server = bot('TOKEN', 9966)
+  const server = bot(9966, 'TOKEN')
   const client = new Hub({
     id: 'client',
     url: 'ws://localhost:9966',

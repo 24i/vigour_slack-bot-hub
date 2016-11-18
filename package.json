@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A slack bot runner as a hub",
   "main": "./lib/index.js",
+  "bin": {
+    "slack-bot-hub": "bin/bot.js"
+  },
   "scripts": {
     "test": "(ducktape; node test) | tap-difflet && standard",
     "watch": "nodemon test | tap-difflet",
