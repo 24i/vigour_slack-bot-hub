@@ -4,4 +4,4 @@
 
 const hub = require('../lib')
 
-hub(process.argv[2], process.argv[3] || process.env.BOT_TOKEN)
+hub(process.argv[2] || process.env.BOT_TOKEN, process.argv[3])
