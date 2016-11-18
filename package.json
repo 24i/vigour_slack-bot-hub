@@ -7,6 +7,7 @@
     "slack-bot-hub": "bin/bot.js"
   },
   "scripts": {
+    "start": "slack-bot-hub",
     "test": "(ducktape; node test) | tap-difflet && standard",
     "watch": "nodemon test | tap-difflet",
     "cover": "istanbul cover --report none --print detail test",
